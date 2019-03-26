@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Tiles</title>
+  <!-- SmartMaps CSS einbinden -->
+  <link href="https://www.yellowmap.de/Presentation/Yellowmaps/Examples/assets/site.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.yellowmap.de/api_js/cdn/highlight/styles/github.css">
+  <link href="owfonts/css/owfont-regular.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <div id="map-wrapper">
+    <!-- Vordefiniertes DIV-Element, in das die Karte geladen wird. -->
+    <div id="map" style="width: 900px; height: 600px;"></div>
+  </div>
+  <!-- SmartMaps-API -->
+  <script src="https://www.yellowmap.de/api_rst/api/loader?libraries=free-3&apiKey={API_KEY}"></script>
+  <script>
+    ym.ready(function(modules) {
+
+      // Wir beziehen Kacheln von Open Weather Map; fordern Sie Ihre eigene Zugriffs-ID hier an => https://openweathermap.org/appid
+      var appId = '{APP_ID}';
+      // Kachel der Temperatur-Schicht
+      var TileUrl = 'http://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=' + appId
+      var DemoLayer = new L.tileLayer(TileUrl);
+
+      // Karte einzeichnen.
+      var map = ym.map("map", {
+        center: ym.latLng(39.717318, -23.425264),
+        zoom: 3
+      });
+
+      // Kachelschicht der Karte hinzufügen.
+      DemoLayer.addTo(map);
+    });
+  </script>
+</body>
+</html>
