@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Routenberechnung</title>
+  <!-- SmartMaps CSS einbinden -->
+  <link href="https://www.yellowmap.de/Presentation/Yellowmaps/Examples/assets/site.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.yellowmap.de/api_js/cdn/highlight/styles/github.css">
+</head>
+
+<body>
+  <div id="map-wrapper">
+    <div class="geocoder-form" style="z-index:1000">
+      <form id="route-single-slot-form">
+        <fieldset>
+          <input type="text" name="RouteStart" id="RouteStart" value="76131" placeholder="RouteStart">
+          <input type="text" name="RouteEnd" id="RouteEnd" value="76228" placeholder="RouteEnd">
+          <button type="submit">send</button>
+        </fieldset>
+      </form>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <!-- SmartMaps-API -->
+  <script src="https://www.yellowmap.de/api_rst/api/loader?libraries=free-3.1&apiKey={API_KEY}"></script>
+  <script>
+    ym.ready(function(modules) {
+
+      var routeSingleSlotForm = document.getElementById('route-single-slot-form');
+      var routing = new ym.services.Routing();
+
+      // Karteninhalt definieren.
+      var stationLayer = ym.layerGroup();
+      var waypoints = [];
+
+      // Routen-Layer festlegen. Dies ist die komplette Logik, um eine Route mit allen 
+      // ihren Stationen einzuzeichnen.
+      routingLayer = ym.geoJson(null, {
+        style: function(feature) {
+          // Polyline einzeichnen
+          if (feature.geometry.type === "LineString") {
+            return {
+              weight: 7,
+              opacity: 0.8
+            };
+          }
+        },
+
+        pointToLayer: function(feature, latlng) {
+          // Stationen mit Informationen einzeichnen.
+          var waypointMarker = ym.circleMarker(latlng);
+          waypointMarker.bindPopup(feature.properties.description);
+          return waypointMarker;
+        }
+      });
+
+      // Karte definieren.
+      var map = ym.map("map", {
+        center: ym.latLng(48.991897, 8.435568),
+        zoom: 13
+      });
+
+      // Routen-Layer einzeichnen.
+      map.addLayer(routingLayer);
+      map.addLayer(stationLayer);
+
+
+
+      routeSingleSlotForm.onsubmit = function(e) {
+        // Alten Karteninhalt verwerfen.
+        waypoints = [];
+        if (routingLayer) {
+          routingLayer.clearLayers();
+        }
+        if (stationLayer) {
+          stationLayer.clearLayers();
+        }
+        e.preventDefault();
+        modules.geocodeString(document.getElementById('RouteStart').value);
+        modules.geocodeString(document.getElementById('RouteEnd').value);
+      };
+
+      ym.services.geoCoder.on('success', function(req, res) {
+        var geoJSONCoords = [];
+        var geoJson = ym.geoJson(res.body, {
+          onEachFeature: function(feature, layer) {
+            layer.setIcon(ym.provider.Icon.Default());
+            var popUpContent = "";
+            if (feature.properties.street) {
+              popUpContent += feature.properties.street + ", "
+            }
+            if (feature.properties.zip) {
+              popUpContent += feature.properties.zip + " "
+            }
+            if (feature.properties.city) {
+              popUpContent += feature.properties.city + " "
+            }
+            if (feature.properties.cityPart) {
+              popUpContent += feature.properties.cityPart
+            }
+            layer.bindPopup(popUpContent);
+            geoJSONCoords.push(ym.latLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]));
+          }
+        });
+        stationLayer.addLayer(geoJson);
+
+        // Falls mehr als ein Ergebnis in der Liste mit den geokodierten Adressen vorliegt, 
+        // wird das erste verwenden.
+        waypoints.push(geoJSONCoords[0]);
+
+        if (waypoints.length > 1) {
+          routing.calcRoute(waypoints);
+        }
+      });
+
+      ym.services.geoCoder.on('error', function(req, res, errorType) {
+        console.log(arguments);
+      });
+
+      routing.on("success", function(request, response) {
+        routingLayer.addData(response.body);
+        map.fitBounds(routingLayer.getBounds());
+      });
+
+    });
+  </script>
+</body>
+
+</html>
