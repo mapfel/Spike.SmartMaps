@@ -1,0 +1,50 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>RequireJS Test</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+
+    <!--
+    Vor </body> und vor RequireJS wird Leaflet und die SmartMaps-API geladen.
+    Leaflet wird nur deswegen eingebunden, weil es für RequireJS explizit geladen werden muss.
+    -->
+    <script src="https://staging.yellowmap.de/api_js/cdn/leaflet/leaflet-1.2.0.min.js"></script>
+    <script src="https://staging.yellowmap.de/api_rst/api/loader?apiKey={API_KEY}&libraries=enterprise-3"></script>
+
+    <!--
+    RequireJS konfigurieren und ausführen. Im Beispiel wird jquery geladen und Beispielcode ausgeführt (console.log()).
+    -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js"></script>
+    <script>
+        requirejs.config({
+            paths : {
+                'jquery': 'https://code.jquery.com/jquery-3.2.1.min'
+            },
+            shim: {
+                'jquery': {
+                    exports: ['$']
+                }
+            }
+        });
+
+        requirejs(['jquery'], function () {
+            console.log('hello, world!');
+        });
+    </script>
+
+    <!--
+    Vor </body>, aber nach dem Ausführen von RequireJS wird ym.ready() aufgerufen.
+    -->
+    <script>
+        ym.ready(function () {
+            console.log('hello there!');
+            console.log(L);
+        });
+    </script>
+</body>
+</html>
