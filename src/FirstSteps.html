@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8" />
+</head>
+<body>
+	<!-- Stelle, an der eine Karte angezeigt werden soll. Auf die ID wird unten im Skript verwiesen. -->
+	<div id="map" style="height: 400px; width: 500px;"></div>
+
+	<!-- Laden der SmartMaps-API. -->
+	<script src="https://api.yellowmaps.eu/api_rst/api/loader/?apiKey={API_KEY}&libraries=free-3"></script>
+
+	<!-- Zugriff auf die SmartMaps-API. Hier: Anzeige einer Karte. -->
+	<script>
+		ym.ready(function (modules) {
+			var provider = modules.provider; 
+			// Kurzform: ym.latLng(49.001, 8.417);
+			var center = ym.latLng(49.001, 8.417);
+			// Kurzform: ym.map(...);
+
+			// Mittelpunkt und Zoomstufe sind nicht optional.
+			var map = new provider.Map("map", {
+			center: center,
+			zoom: 12
+			});
+
+			window.map = map;
+		});
+	</script>
+</body>
+</html>
