@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>SmartMaps Karte</title>
+  <!-- SmartMaps CSS einbinden -->
+  <link href="https://www.yellowmap.de/Presentation/Yellowmaps/Examples/assets/site.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.yellowmap.de/api_js/cdn/highlight/styles/github.css">
+</head>
+
+<body>
+  <div id="map-wrapper">
+    <!-- Vordefiniertes DIV-Element, in das die Karte geladen wird. -->
+    <div id="map" style="width: 600px; height: 600px;"></div>
+  </div>
+  <!-- SmartMaps API -->
+  <script src="https://www.yellowmap.de/api_rst/api/loader?libraries=free-3.1&apiKey={API_KEY}"></script>
+
+  <script>
+    ym.ready(function(modules) {
+      var map = ym.map("map", {
+		// Geographische Länge und Breite definieren.
+        center: ym.latLng(50.095685, 8.690445),
+		// Zoomstufe festlegen.
+        zoom: 12
+      });
+	  
+      window.map = map;
+    });
+  </script>
+</body>
+</html>
