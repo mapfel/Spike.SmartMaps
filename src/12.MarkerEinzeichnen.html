@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Testbeispiel Icons und divIcons</title>
+	<!-- SmartMaps CSS einbinden -->
+    <link href="https://www.yellowmap.de/Presentation/Yellowmaps/Examples/assets/site.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.yellowmap.de/api_js/cdn/highlight/styles/github.css">
+	<!-- Klasse für DIV-Icon definieren. -->
+	<style>
+	.markerIcon
+	{
+		width: 35px;
+		height: 35px;
+		background: #6d6d6d;
+		text-align: center;
+		line-height: 34px;
+		border-radius: 50%;
+		border: 3px solid #ffffff;
+		box-shadow: inset 1px 1px rgba(255,255,255,0.1),1px 1px 1px rgba(0,0,0,0.2);
+		color: #fff;
+		font-weight: bold;  
+		font-size: 14px;  
+	}
+	</style>
+
+</head>
+<body>
+	<div id="map-wrapper">
+		<!-- Vordefiniertes DIV-Element, in das die Karte geladen wird. -->	
+		<div id="map" style="height: 400px; width: 500px;"></div>
+	</div>
+	<!-- SmartMaps-API einbinden -->
+	<script src="https://www.yellowmap.de/api_rst/api/loader?libraries=free-3.1&apiKey={API_KEY}"></script>
+		
+	<script>
+	ym.ready(function (modules) {
+		
+		var map = ym.map("map", {
+			center: ym.latLng(49.021403, 8.439620),
+			zoom: 19,
+		});
+	
+		var icon = new modules.provider.Icon({
+			iconUrl: 'http://cdn.yellowmap.de/yellowmaps/img/marker.svg',
+			iconRetinaUrl: 'http://cdn.yellowmap.de/yellowmaps/img/marker.svg',
+			iconSize: [30, 49],
+			iconAnchor: [15, 49],
+			popupAnchor: [0, -48]
+		});
+		
+		var divIcon = ym.divIcon({className: 'markerIcon', iconSize: [40, 40]});
+
+		// Koordinaten des Markers festlegen
+		var IconMarkerLatLng = ym.latLng(49.021192, 8.439603);
+		// Marker definieren
+		var marker = window.marker = new modules.provider.Marker(IconMarkerLatLng);
+		// icon des Markers definieren => SVG-Icon
+		marker.setIcon(icon);
+		// Marker einzeichnen
+		marker.addTo(map);
+		
+		// Koordinaten des zweiten Markers festlegen
+		var divIconMarkerLatLng = ym.latLng(49.021603, 8.439620);
+		// Marker definieren
+		var divIconmarker = window.marker = new modules.provider.Marker(divIconMarkerLatLng);
+		// Icon des Markers definieren => DIV-Icon
+		divIconmarker.setIcon(divIcon);
+		// Marker einzeichnen
+		divIconmarker.addTo(map);	
+		
+	});
+</script>
+
+</body>
+</html>
