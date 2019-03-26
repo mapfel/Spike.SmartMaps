@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Reverse Geokodierung</title>
+  <!-- SmartMaps CSS einbinden -->
+  <link href="https://www.yellowmap.de/Presentation/Yellowmaps/Examples/assets/site.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.yellowmap.de/api_js/cdn/highlight/styles/github.css">
+</head>
+
+<body>
+  <div id="map-wrapper">
+    <div class="geocoder-form" style="z-index:1000">
+      <form id="location-form">
+        <fieldset>
+          <label>
+              Land:
+              <input type="text" id="country" name="country" value="" placeholder="Land">
+            </label>
+          <label>
+              Bundesland:
+              <input type="text" id="district" name="district" value="" placeholder="Bundesland">
+            </label>
+          <label>
+              Postleitzahl:
+              <input type="text" id="zip" name="zip" value="" placeholder="PLZ">
+            </label>
+          <label>
+              Stadt:
+              <input type="text" id="city" name="city" value="" placeholder="Stadt">
+            </label>
+          <label>
+              Stadtteil:
+              <input type="text" id="cityPart" name="cityPart" value="" placeholder="Stadtteil">
+            </label>
+          <label>
+              Straße:
+              <input type="text" id="street" name="street" value="" placeholder="Straße">
+            </label>
+          <label>
+              Hausnummer:
+              <input type="text" id="houseNo" name="houseNo" value="" placeholder="Hausnummer">
+            </label>
+        </fieldset>
+      </form>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <!-- SmartMaps-API -->
+  <script src="https://www.yellowmap.de/api_rst/api/loader?libraries=free-3.1&apiKey={API_KEY}"></script>
+  <script>
+    ym.ready(function(modules) {
+      var geocodingForm = document.getElementById('location-form');
+
+      // Layergruppe definieren.
+      var markerLayer = ym.layerGroup();
+
+      // Karte einzeichnen.
+      var map = ym.map("map", {
+        center: ym.latLng(49.021273, 8.439316),
+        zoom: 14
+      });
+
+      // Layergruppe einzeichnen.
+      markerLayer.addTo(map);
+
+      // Klick auf Karte löst die reverse Geokodierung aus.
+      map.on('click', function(e) {
+        markerLayer.clearLayers();
+        ym.services.geoCoder.reverseGeocode(e.latlng);
+        markerLayer.addLayer(ym.marker(e.latlng, {
+          icon: ym.provider.Icon.Default()
+        }));
+      });
+
+      ym.services.geoCoder.on('success', function(req, res) {
+        // Formular ausfüllen.
+        var geoJson = ym.geoJson(res.body, {
+          onEachFeature: function(feature, layer) {
+            console.log(feature);
+            document.getElementById("country").value = feature.properties.isoCountry;
+            document.getElementById("district").value = feature.properties.district;
+            document.getElementById("zip").value = feature.properties.zip;
+            document.getElementById("city").value = feature.properties.city;
+            document.getElementById("cityPart").value = feature.properties.cityPart;
+            document.getElementById("street").value = feature.properties.street;
+            document.getElementById("houseNo").value = feature.properties.houseNo;
+          }
+        });
+      });
+
+      ym.services.geoCoder.on('error', function(req, res, errorType) {
+        console.log(arguments);
+      });
+    });
+  </script>
+</body>
+</html>
