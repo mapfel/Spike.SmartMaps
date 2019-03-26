@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Testbeispiel GeoJSON</title>
+  <!-- SmartMaps CSS einbinden -->
+  <link href="https://www.yellowmap.de/Presentation/Yellowmaps/Examples/assets/site.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.yellowmap.de/api_js/cdn/highlight/styles/github.css">
+</head>
+
+<body>
+  <div id="map-wrapper">
+    <!-- Vordefiniertes div-Element, in das die Karte geladen wird. -->
+    <div id="map" style="width: 600px; height: 600px;"></div>
+  </div>
+  <!-- SmartMaps-API -->
+  <script src="https://www.yellowmap.de/api_rst/api/loader?libraries=free-3&apiKey={API_KEY}"></script>
+
+  <script>
+    ym.ready(function(modules) {
+      var map = ym.map("map", {
+        center: ym.latLng(50.095685, 8.690445),
+        zoom: 12
+      });
+
+      // Objekt für GeoJSON definieren
+      var geoJson = new modules.provider.GeoJSON(null, {
+        style: function(feature) {
+          return feature.properties && feature.properties.style;
+        }
+      });
+
+      // Leeres Objekt in die Karte einbinden.
+      geoJson.addTo(map);
+
+      var DemoGeoJSON = {
+        "type": "FeatureCollection",
+        "features": [
+          // Polygon
+          {
+            "type": "Feature",
+            "properties": {
+              "style": {
+                color: "#8000ff",
+                weight: 2,
+                opacity: 1,
+                fillColor: "#5f215a",
+                fillOpacity: 0.5
+              }
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    8.64469528198242,
+                    50.11727603943097
+                  ],
+                  [
+                    8.635082244873047,
+                    50.112542691690734
+                  ],
+                  [
+                    8.639202117919922,
+                    50.10142298804818
+                  ],
+                  [
+                    8.659114837646484,
+                    50.10164320525455
+                  ],
+                  [
+                    8.662376403808594,
+                    50.11045106339959
+                  ],
+                  [
+                    8.64469528198242,
+                    50.11727603943097
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            // LineString
+            "type": "Feature",
+            "properties": {
+              "style": {
+                color: "#17932d"
+              }
+            },
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [
+                  8.671302795410156,
+                  50.1390654170196
+                ],
+                [
+                  8.702373504638672,
+                  50.13686492019941
+                ],
+                [
+                  8.70443344116211,
+                  50.13466432216694
+                ]
+              ]
+            }
+          },
+          {
+            // Polygon
+            "type": "Feature",
+            "properties": {
+              "style": {
+                color: "#0606a4",
+                weight: 2,
+                opacity: 1,
+                fillColor: "#b4dfe4",
+                fillOpacity: 0.5
+              }
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    8.710784912109375,
+                    50.095917228872004
+                  ],
+                  [
+                    8.724517822265625,
+                    50.095917228872004
+                  ],
+                  [
+                    8.724517822265625,
+                    50.10142298804818
+                  ],
+                  [
+                    8.710784912109375,
+                    50.10142298804818
+                  ],
+                  [
+                    8.710784912109375,
+                    50.095917228872004
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            // Point
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                8.692417144775389,
+                50.124650323149446
+              ]
+            }
+          }
+        ]
+      }
+
+      // Daten in GeoJSON-Objekt laden.
+      geoJson.addData(DemoGeoJSON);
+      window.map = map;
+    });
+  </script>
+
+</body>
+
+</html>
