@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Geokodierung mit einfachem Eingabefeld.</title>
+  <!-- SmartMaps CSS einbinden. -->
+  <link href="https://www.yellowmap.de/Presentation/Yellowmaps/Examples/assets/site.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.yellowmap.de/api_js/cdn/highlight/styles/github.css">
+</head>
+
+<body>
+  <div id="map-wrapper">
+    <div class="geocoder-form" style="z-index:1000">
+      <form id="single-slot-form">
+        <fieldset>
+          <input type="text" name="singleSlot" value="Wattkopfstr, 76133 Karlsruhe" placeholder="Zip/City/Street/HouseNo">
+          <button type="submit">send</button>
+        </fieldset>
+      </form>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <!-- SmartMaps-API -->
+  <script src="https://www.yellowmap.de/api_rst/api/loader?libraries=free-3.1&apiKey={API_KEY}"></script>
+  <script>
+    ym.ready(function(modules) {
+      var singleSlotForm = document.getElementById('single-slot-form');
+
+      // Layergruppe definieren.
+      var layerGroup = ym.layerGroup();
+
+      // Karte einzeichnen.
+      var map = ym.map("map", {
+        center: ym.latLng(49.021273, 8.439316),
+        zoom: 14
+      });
+
+      // Layergruppe einzeichnen.
+      layerGroup.addTo(map);
+
+      singleSlotForm.onsubmit = function(e) {
+        e.preventDefault();
+        var input = document.querySelector('#single-slot-form input');
+        // Adressdaten geokodieren.
+        modules.geocodeString(input.value);
+      };
+
+      ym.services.geoCoder.on('success', function(req, res) {
+        // Alte Daten aus der Karte löschen.
+        layerGroup.clearLayers();
+        var geoJson = ym.geoJson(res.body, {
+          // Für jeden Eintrag Marker einzeichnen.
+          onEachFeature: function(feature, layer) {
+            layer.setIcon(ym.provider.Icon.Default());
+            var popUpContent = "";
+            if (feature.properties.street) {
+              popUpContent += feature.properties.street + ", "
+            }
+            if (feature.properties.zip) {
+              popUpContent += feature.properties.zip + " "
+            }
+            if (feature.properties.city) {
+              popUpContent += feature.properties.city + " "
+            }
+            if (feature.properties.cityPart) {
+              popUpContent += feature.properties.cityPart
+            }
+            // Adressdaten im Popup anzeigen.
+            layer.bindPopup(popUpContent);
+          }
+        });
+        // Kartenausschnitt auf Ergebnismenge optimieren.
+        map.fitBounds(geoJson.getBounds());
+        layerGroup.addLayer(geoJson);
+      });
+
+      ym.services.geoCoder.on('error', function(req, res, errorType) {
+        console.log(arguments);
+      });
+    });
+  </script>
+</body>
+</html>
