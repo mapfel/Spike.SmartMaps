@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Testbeispiel LayerControl</title>
+  <!-- SmartMaps CSS einbinden -->
+  <link href="https://www.yellowmap.de/Presentation/Yellowmaps/Examples/assets/site.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.yellowmap.de/api_js/cdn/highlight/styles/github.css">
+</head>
+
+<body>
+  <div id="map-wrapper">
+    <!-- Vordefiniertes DIV-Element, in das die Karte geladen wird. -->
+    <div id="map" style="width: 600px; height: 600px;"></div>
+  </div>
+  <!-- SmartMaps-API -->
+  <script src="https://www.yellowmap.de/api_rst/api/loader?libraries=free-3.1&apiKey={API_KEY}"></script>
+
+  <script>
+    ym.ready(function(modules) {
+
+      // Layer-Gruppe definieren
+      var cities1 = L.layerGroup();
+      var cities2 = L.layerGroup();
+
+      // Marker zu Layer-Gruppe hinzufügen.
+      new modules.provider.Marker([50.1145465, 8.6825010]).bindPopup('Zeil').addTo(cities1),
+      new modules.provider.Marker([50.1146118689, 8.683300316333]).bindPopup('Stiftstrasse').addTo(cities1),
+      new modules.provider.Marker([50.113980633146, 8.678405284881592]).bindPopup('Hauptwache').addTo(cities2),
+      new modules.provider.Marker([50.11122167392529, 8.680733442306519]).bindPopup('Rathaus').addTo(cities2);
+
+      // Karte definieren
+      var map = ym.map("map", {
+        center: ym.latLng(50.1145465, 8.6825010),
+        zoom: 15
+      });
+
+      // Objekt für Layer-Control definieren => Bezeichnung und Inhalt
+      var overlays = {
+    		"Innenstadt": cities1,
+        "Hauptwache und Rathaus": cities2
+      	};
+
+      // Initialen Inhalt zur Karte hinzufügen.
+      map.original.addLayer(cities2);
+      // Layer-Control zur Karte hinzufügen.
+      L.control.layers(null, overlays).addTo(map.original);
+    });
+  </script>
+</body>
+</html>
