@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Routenberechnung mit reverser Geokodierung</title>
+  <!-- SmartMaps CSS einbinden. -->
+  <link href="https://www.yellowmap.de/Presentation/Yellowmaps/Examples/assets/site.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.yellowmap.de/api_js/cdn/highlight/styles/github.css">
+</head>
+
+<body>
+  <div id="map-wrapper">
+    <div class="geocoder-form" style="z-index:1000">
+      <form id="route-reversGeo-form">
+        <fieldset>
+          <button class="pull-right" type="reset" id="clear-form">Reset</button>&nbsp;&nbsp;
+          <button type="submit" class="pull-left">Routing</button>
+        </fieldset>
+      </form>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <!-- SmartMaps-API -->
+  <script src="https://www.yellowmap.de/api_rst/api/loader?libraries=free-3.1&apiKey={API_KEY}"></script>
+  <script>
+    ym.ready(function(modules) {
+
+      var routeForm = document.getElementById('route-reversGeo-form');
+      var reset = document.getElementById("clear-form");
+
+      var routing = new ym.services.Routing();
+
+      // Karteninhalt definieren.
+      var stationLayer = ym.layerGroup();
+      var waypoints = [];
+
+      // Routen-Layer festlegen. Dies ist die komplette Logik, um eine Route mit allen
+      // ihren Stationen einzuzeichnen.
+      routingLayer = ym.geoJson(null, {
+        style: function(feature) {
+          // Polyline einzeichnen.
+          if (feature.geometry.type === "LineString") {
+            return {
+              weight: 7,
+              opacity: 0.8
+            };
+          }
+        },
+
+        pointToLayer: function(feature, latlng) {
+          // Stationen mit Informationen einzeichnen.
+          var waypointMarker = ym.circleMarker(latlng);
+          waypointMarker.bindPopup(feature.properties.description);
+          return waypointMarker;
+        }
+      });
+
+      // Karte definieren
+      var map = ym.map("map", {
+        center: ym.latLng(48.991897, 8.435568),
+        zoom: 13
+      });
+
+      // Layer einzeichnen.
+      map.addLayer(routingLayer);
+      map.addLayer(stationLayer);
+
+      map.on('click', function(e) {
+        waypoints.push(e.latlng);
+        stationLayer.addLayer(ym.marker(e.latlng, {
+          icon: ym.provider.Icon.Default()
+        }));
+      });
+
+      reset.addEventListener("click", function() {
+        // Alten Karteninhalt verwerfen.
+        waypoints = [];
+        if (routingLayer) {
+          routingLayer.clearLayers();
+        }
+        if (stationLayer) {
+          stationLayer.clearLayers();
+        }
+      }, false);
+
+      routeForm.onsubmit = function(e) {
+        e.preventDefault();
+        if (waypoints.length > 1) {
+          routing.calcRoute(waypoints);
+        }
+        else {
+          alert("Please add Stations by clicking in map");
+        }
+      };
+
+      routing.on("success", function(request, response) {
+        routingLayer.addData(response.body);
+        map.fitBounds(routingLayer.getBounds());
+      });
+
+    });
+  </script>
+</body>
+</html>
